@@ -32,7 +32,7 @@ public class StockMaster {
   private LocalDate savedAt;       // 데이터 저장 일자
   private LocalDate updatedAt;     // 데이터 수정 일자
 
-  @OneToMany(mappedBy = "stockMaster", cascade = CascadeType.PERSIST)
+  @OneToMany(mappedBy = "stockMaster", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<StockReportHistory> stockReportHistoryList = new ArrayList<>();
 
 }

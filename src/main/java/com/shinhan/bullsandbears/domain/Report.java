@@ -22,7 +22,7 @@ public class Report {
   private Integer amount;
   private LocalDate createdAt;
 
-  @OneToMany(mappedBy = "report", cascade = CascadeType.PERSIST)
+  @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UserReportHistory> userReportHistoryList = new ArrayList<>();
 
 }

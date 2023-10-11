@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum Duration {
 
-  SIXTH_MONTH("6개월"),
+  SIXTH_MONTHS("6개월"),
   ONE_YEAR("1년"),
   TWO_YEARS("2년"),
   THREE_YEARS("3년");
