@@ -24,7 +24,10 @@ repositories {
 dependencies {
     // swagger 설정
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
-    
+
+    // oauth2 설정
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.7.14'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
