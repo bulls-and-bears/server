@@ -4,7 +4,7 @@ spring:
       "dev": "oauth, jwt"
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/myDb
+    url: jdbc:mysql://localhost:3306/myDb?useSSL=false&characterEncoding=UTF-8&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root
