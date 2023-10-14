@@ -16,6 +16,10 @@ import java.util.List;
 public class User {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "user_id")
+  private Long id;
+
   private String email;
 
   private String name;
@@ -23,6 +27,5 @@ public class User {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UserReportHistory> userReportHistoryList = new ArrayList<>();
-
 
 }
