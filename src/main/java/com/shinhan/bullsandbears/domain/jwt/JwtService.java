@@ -7,6 +7,7 @@ import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -17,7 +18,9 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Service
 public class JwtService {
 
-	private String secretKey = "token-secret-key";
+	@Value("${jwt.secretKey}")
+	private String secretKey;
+
 	static final long ACCESS_PERIOD = 1000L * 60L * 10L * 6L; // 1시간
 	static final long REFRESH_PERIOD = 1000L * 60L * 60L * 24L * 30L; // 3달
 	static final String DATE_FORMAT = "yyyy-MM-dd-HH-mm-ss";
@@ -27,11 +30,11 @@ public class JwtService {
 		secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 	}
 
-	public Jwt generateToken(String email, String provider, String name) {
+	public Jwt generateToken(String email, String name, String provider) {
 		Claims claims = Jwts.claims().setSubject("token");
 		claims.put("email", email);
-		claims.put("provider", provider);
 		claims.put("name", name);
+		claims.put("provider", provider);
 
 		Date now = new Date();
 
