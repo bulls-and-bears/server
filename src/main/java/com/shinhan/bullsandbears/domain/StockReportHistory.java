@@ -1,6 +1,9 @@
 package com.shinhan.bullsandbears.domain;
 
 import javax.persistence.*;
+
+import com.shinhan.bullsandbears.report.Report;
+import com.shinhan.bullsandbears.stock.StockMaster;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
