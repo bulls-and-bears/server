@@ -1,5 +1,6 @@
-package com.shinhan.bullsandbears.domain;
+package com.shinhan.bullsandbears.stock;
 
+import com.shinhan.bullsandbears.domain.StockReportHistory;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,10 @@ public class StockMaster {
   private String stockMarket;      // 시장명
   private BigDecimal price;        // 주식 가격
   private BigDecimal dividendAmount;      // 주당 배당금
-  private BigDecimal dividendYieldRate;   // 시가 수익률
+  private BigDecimal DividendPerShareRatio;   // 시가 배당률
   private String stockType;        // 주식 종류
-  private Date dividendPaymentDate;       // 배당금 지급일
+  private LocalDate dividendRecordDate;       // 배당금 기준일
+  private LocalDate dividendPaymentDate;       // 배당금 지급일
   private BigDecimal faceValue;    // 액면가
   private LocalDate savedAt;       // 데이터 저장 일자
   private LocalDate updatedAt;     // 데이터 수정 일자
