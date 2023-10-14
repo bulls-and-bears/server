@@ -33,7 +33,7 @@ public class SecurityConfig {
 
 			.and()
 			.oauth2Login()
-			.defaultSuccessUrl("/oauth/loginInfo", true)
+			.defaultSuccessUrl("/oauth/info", true)
 			.userInfoEndpoint()
 			.userService(customOAuth2UserService);
 

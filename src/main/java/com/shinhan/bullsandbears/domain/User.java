@@ -9,11 +9,14 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -27,6 +30,11 @@ public class User {
 
 	private String name;
 	private String provider;
+
+	@Setter
+	private String refreshToken;
+
+	@CreatedDate
 	private LocalDateTime createdAt;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
