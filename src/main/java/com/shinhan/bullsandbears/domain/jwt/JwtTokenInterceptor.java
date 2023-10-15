@@ -1,5 +1,6 @@
 package com.shinhan.bullsandbears.domain.jwt;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,10 +20,19 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 		throws Exception {
-		String accessToken = request.getHeader("accessToken");
-		if (jwtService.verifyToken(accessToken)) {
-			return true;
+		Cookie[] cookies = request.getCookies();
+		if (cookies == null) {
+			throw new Exception("no cookie");
 		}
-		throw new Exception("accessTokenError");
+
+		for (Cookie cookie : cookies) {
+			if (cookie.getName().equals("accessToken")) {
+				String accessToken = cookie.getValue();
+				if (jwtService.verifyToken(accessToken)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

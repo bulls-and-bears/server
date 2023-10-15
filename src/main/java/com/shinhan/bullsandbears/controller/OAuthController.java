@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.expression.ExpressionException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -32,12 +31,16 @@ public class OAuthController {
 
 	private final JwtService jwtService;
 	private final UserRepository userRepository;
-	public int cookieMaxAge = 864000;
 
-	public String tokenHeader = "accessToken";
+	@GetMapping("/test")
+	public ResponseEntity<String> test() {
+		String test = "Test";
+		return new ResponseEntity<>(test, HttpStatus.OK);
+	}
 
-	@GetMapping("/info")
-	public void createToken(HttpServletResponse response, Authentication authentication) throws Exception {
+	@GetMapping("/jwt")
+	public void createToken(HttpServletResponse response, HttpServletRequest request,
+		Authentication authentication) throws Exception {
 		OAuth2User oAuth2User = (OAuth2User)authentication.getPrincipal();
 		Map<String, Object> attributes = oAuth2User.getAttributes();
 
@@ -46,15 +49,9 @@ public class OAuthController {
 		user.setRefreshToken(token.getRefreshToken());
 		userRepository.save(user);
 
-		String accessTokenExpiration = jwtService.dateToString(token.getAccessToken());
-		String refreshTokenExpiration = jwtService.dateToString(token.getRefreshToken());
-
-		response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:8080/oauth/jwt")
+		response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000")
 			.queryParam("accessToken", token.getAccessToken())
 			.queryParam("refreshToken", token.getRefreshToken())
-			.queryParam("accessTokenExpiration", accessTokenExpiration)
-			.queryParam("refreshTokenExpiration", refreshTokenExpiration)
-			.queryParam("email", user.getEmail())
 			.queryParam("name", user.getName())
 			.build()
 			.encode(StandardCharsets.UTF_8)
@@ -87,24 +84,6 @@ public class OAuthController {
 		map.put("accessTokenExpiration", accessTokenExpiration);
 
 		return new ResponseEntity<>(map, HttpStatus.OK);
-	}
-
-	@GetMapping("/jwt")
-	public ResponseEntity<Jwt> oauthJwt(Authentication authentication) {
-		OAuth2User oAuth2User = (OAuth2User)authentication.getPrincipal();
-		Map<String, Object> attributes = oAuth2User.getAttributes();
-		Jwt jwt = jwtService.generateToken((String)attributes.get("email"), "google", (String)attributes.get("name"));
-
-		HttpHeaders httpHeaders = new HttpHeaders();
-		String accessToken = jwt.getAccessToken();
-		httpHeaders.add(HttpHeaders.SET_COOKIE, setCookieToken(accessToken));
-
-		return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
-	}
-
-	public String setCookieToken(String accessToken) {
-		return String.format("%s=%s; Path=/; HttpOnly; Max-Age=%d; SameSite=Lax",
-			tokenHeader, accessToken, cookieMaxAge);
 	}
 
 	private User getAuthUser(Map<String, Object> attributes) throws Exception {
