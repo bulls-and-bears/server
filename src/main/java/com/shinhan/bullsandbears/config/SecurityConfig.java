@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final CustomOAuth2UserService customOAuth2UserService;
+	private final WebConfig webConfig;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -27,13 +28,11 @@ public class SecurityConfig {
 			.headers().frameOptions().disable()
 
 			.and()
-			.authorizeRequests()
-			.antMatchers("/", "/oauth/**").permitAll()
-			.anyRequest().authenticated()
+			.cors().configurationSource(webConfig.corsConfigurationSource())
 
 			.and()
 			.oauth2Login()
-			.defaultSuccessUrl("/oauth/info", true)
+			.defaultSuccessUrl("/oauth/jwt", true)
 			.userInfoEndpoint()
 			.userService(customOAuth2UserService);
 
