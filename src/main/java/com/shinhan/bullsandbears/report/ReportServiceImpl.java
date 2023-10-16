@@ -20,6 +20,7 @@ public class ReportServiceImpl implements ReportService {
 
   private final StockRepository stockRepository;
   private final StockReportHistoryRepository stockReportHistoryRepository;
+  private final ReportRepository reportRepository;
 
   @Override
   @Transactional
@@ -30,7 +31,8 @@ public class ReportServiceImpl implements ReportService {
 
     List<StockMaster> stocks = stockRepository.findAll();
     List<StockMaster> calculatedStocks = calculateLogic(stocks, duration.getDays());
-    List<StockMaster> optimalStocks = findOptimalStockCombination(calculatedStocks, amount);
+
+    List<Map<StockMaster, Integer>> optimalStocks = findOptimalStockCombination(calculatedStocks, amount);
 
     Report report = Report.builder()
             .duration(duration)
@@ -38,18 +40,29 @@ public class ReportServiceImpl implements ReportService {
             .createdAt(LocalDate.now())
             .build();
 
-    optimalStocks.forEach(stock -> createStockReport(stock, report));
-
+    for (int groupNum = 0; groupNum < optimalStocks.size(); groupNum++) {
+      Map<StockMaster, Integer> combination = optimalStocks.get(groupNum);
+      for (Map.Entry<StockMaster, Integer> entry : combination.entrySet()) {
+        StockMaster stock = entry.getKey();
+        int count = entry.getValue();
+        if (count != 0) {
+          Integer stockGroup = Integer.valueOf(groupNum);
+          createStockReport(stock, report, count, stockGroup);
+        }
+      }
+    }
     return new ReportDto.CreateResponse(report);
   }
 
   @Transactional
-  public void createStockReport(StockMaster stock, Report report) {
+  public void createStockReport(StockMaster stock, Report report, Integer stockUnits, Integer stockGroup) {
 
     stockReportHistoryRepository.save(
             StockReportHistory.builder()
                     .stockMaster(stock)
                     .report(report)
+                    .stockUnits(stockUnits)
+                    .stockGroup(stockGroup)
                     .build()
     );
   }
@@ -57,7 +70,7 @@ public class ReportServiceImpl implements ReportService {
   public List<StockMaster> calculateLogic(List<StockMaster> stocks, Integer duration) {
 
     List<StockMaster> filteredByDividendRecordDateStocks = filterByDividendRecordDate(stocks, LocalDate.now());
-    List<StockMaster> filteredStocksByPurchaseDate = filterStocksByPurchaseDate(filteredByDividendRecordDateStocks,LocalDate.now());
+    List<StockMaster> filteredStocksByPurchaseDate = filterStocksByPurchaseDate(filteredByDividendRecordDateStocks, LocalDate.now());
 
     List<StockMaster> sortedStocks = sortedByDividendPerShareRatio(filteredStocksByPurchaseDate);
 
@@ -86,51 +99,56 @@ public class ReportServiceImpl implements ReportService {
             .collect(Collectors.toList());
   }
 
-  public List<StockMaster> findOptimalStockCombination(List<StockMaster> stocks, BigDecimal amount) {
+  public List<Map<StockMaster, Integer>> findOptimalStockCombination(List<StockMaster> stocks, BigDecimal amount) {
+    List<Map<StockMaster, Integer>> optimalCombinations = new ArrayList<>();  // <주식, 개수> 최적 조합 리스트
+    Map<StockMaster, Integer> currentCombination = new HashMap<>();   // <주식, 개수> 현재 조합
+    backtrack(optimalCombinations, currentCombination, stocks, amount, 0); // 백트래킹을 시작
 
-    int n = stocks.size();
-    List<List<BigDecimal>> dp = new ArrayList<>(n + 1);
-
-
-    for (int i = 0; i <= n; i++) {
-      List<BigDecimal> row = new ArrayList<>(amount.intValue() + 1);
-      for (int j = 0; j <= amount.intValue(); j++) {
-        row.add(BigDecimal.ZERO);
-      }
-      dp.add(row);
-    }
-
-    for (int i = 1; i <= n; i++) {
-      StockMaster stock = stocks.get(i - 1);
-      BigDecimal price = stock.getPrice();
-      BigDecimal dividend = stock.getDividendAmount();
-
-      for (int j = 0; j <= amount.intValue(); j++) {
-        BigDecimal maxWithoutSelect = dp.get(i - 1).get(j);
-
-        dp.get(i).set(j, maxWithoutSelect);
-
-        for (int k = 1; k * price.intValue() <= j; k++) {
-          BigDecimal selectMultipleTimes = dp.get(i - 1).get(j - k * price.intValue())
-                  .add(BigDecimal.valueOf(k).multiply(dividend));
-          
-          if (selectMultipleTimes.compareTo(dp.get(i).get(j)) > 0) {
-            dp.get(i).set(j, selectMultipleTimes);
-          }
-        }
-      }
-
-    }
-
-    int j = amount.intValue();
-    List<StockMaster> selectedStocks = new ArrayList<>();
-    for (int i = n; i > 0 && j > 0; i--) {
-      if (!dp.get(i).get(j).equals(dp.get(i - 1).get(j))) {
-        selectedStocks.add(stocks.get(i - 1));
-        j -= stocks.get(i - 1).getPrice().intValue();
-      }
-    }
-
-    return selectedStocks;
+    return optimalCombinations;
   }
+
+  private void backtrack(List<Map<StockMaster, Integer>> optimalCombinations,
+                         Map<StockMaster, Integer> currentCombination,
+                         List<StockMaster> stocks,
+                         BigDecimal remainingAmount,
+                         int currentIndex) {
+
+    if (currentIndex == stocks.size()) {
+      BigDecimal currentDividend = calculateDividend(currentCombination);
+      BigDecimal maxDividend;
+      if (!optimalCombinations.isEmpty()) {
+        maxDividend = calculateDividend(optimalCombinations.get(0));
+      } else {
+        maxDividend = BigDecimal.ZERO;
+      }
+      if (currentDividend.compareTo(maxDividend) > 0) {
+        optimalCombinations.clear();
+        optimalCombinations.add(new HashMap<>(currentCombination));
+      } else if (currentDividend.equals(maxDividend)) {
+        optimalCombinations.add(new HashMap<>(currentCombination));
+      }
+      return;
+    }
+
+    StockMaster stock = stocks.get(currentIndex);
+    int maxQuantity = remainingAmount.divide(stock.getPrice(), BigDecimal.ROUND_DOWN).intValue();
+    for (int quantity = 0; quantity <= maxQuantity; quantity++) {
+      BigDecimal cost = stock.getPrice().multiply(BigDecimal.valueOf(quantity));
+      if (cost.compareTo(remainingAmount) <= 0) {
+        currentCombination.put(stock, quantity);
+        BigDecimal remaining = remainingAmount.subtract(cost);
+        backtrack(optimalCombinations, currentCombination, stocks, remaining, currentIndex + 1);
+        currentCombination.remove(stock);
+      }
+    }
+  }
+
+  private BigDecimal calculateDividend(Map<StockMaster, Integer> combination) {
+    return combination.entrySet().stream()
+            .map(entry -> entry.getKey().getDividendAmount().multiply(BigDecimal.valueOf(entry.getValue())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+
+
 }

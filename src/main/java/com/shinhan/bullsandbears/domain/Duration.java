@@ -12,7 +12,7 @@ public enum Duration {
 
   private final String label;
   private final int days;
-  
+
   Duration(String label, int days) {
     this.label = label;
     this.days = days;
