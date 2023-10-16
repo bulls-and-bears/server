@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,8 +45,12 @@ public class OAuthController {
 		user.setRefreshToken(token.getRefreshToken());
 		userRepository.save(user);
 
+		Cookie accessTokenCookie = new Cookie("accessToken", token.getAccessToken());
+		accessTokenCookie.setHttpOnly(true);
+		accessTokenCookie.setPath("/");
+		response.addCookie(accessTokenCookie);
+
 		response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000")
-			.queryParam("accessToken", token.getAccessToken())
 			.queryParam("name", user.getName())
 			.build()
 			.encode(StandardCharsets.UTF_8)
