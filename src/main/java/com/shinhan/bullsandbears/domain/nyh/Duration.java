@@ -1,4 +1,4 @@
-package com.shinhan.bullsandbears.domain;
+package com.shinhan.bullsandbears.domain.nyh;
 
 import lombok.Getter;
 
