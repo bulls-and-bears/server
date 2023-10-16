@@ -1,0 +1,152 @@
+[
+  {
+    "crno": "1648110035647",
+    "stockName": "락앤락",
+    "divRateCpri": 27.7,
+    "stckGenrDvdnAmt": 1953,
+    "dvdnBasDt": "20221231",
+    "cashDvdnPayDt": "20230406",
+    "stockCode": "115390",
+    "marketPrice": 5850
+  },
+  {
+    "crno": "1101110039019",
+    "stockName": "일성신약",
+    "divRateCpri": 22.2,
+    "stckGenrDvdnAmt": 20000,
+    "dvdnBasDt": "20221231",
+    "cashDvdnPayDt": "20230411",
+    "stockCode": "003120",
+    "marketPrice": 22450
+  },
+  {
+    "crno": "2101110091498",
+    "stockName": "JB금융지주",
+    "divRateCpri": 10.1,
+    "stckGenrDvdnAmt": 835,
+    "dvdnBasDt": "20230630",
+    "cashDvdnPayDt": "20230808",
+    "stockCode": "175330",
+    "marketPrice": 10480
+  },
+  {
+    "crno": "1101110085450",
+    "stockName": "현대자동차1우",
+    "divRateCpri": 10.0,
+    "stckGenrDvdnAmt": 1500,
+    "dvdnBasDt": "20230628",
+    "cashDvdnPayDt": "20230814",
+    "stockCode": "005385",
+    "marketPrice": 103000
+  },
+  {
+    "crno": "111",
+    "stockName": "S-OIL1우",
+    "divRateCpri": 8.9,
+    "stckGenrDvdnAmt": 200,
+    "dvdnBasDt": "20230628",
+    "cashDvdnPayDt": "20230825",
+    "stockCode": "010950",
+    "marketPrice": 73600
+  },
+  {
+    "crno": "1101110026834",
+    "stockName": "한양증권",
+    "divRateCpri": 8.8,
+    "stckGenrDvdnAmt": 200,
+    "dvdnBasDt": "20221231",
+    "cashDvdnPayDt": "20230406",
+    "stockCode": "001750",
+    "marketPrice": 9510
+  },
+  {
+    "crno": "1101116981206",
+    "stockName": "우리금융지주",
+    "divRateCpri": 8.8,
+    "stckGenrDvdnAmt": 180,
+    "dvdnBasDt": "20230628",
+    "cashDvdnPayDt": "20230809",
+    "stockCode": "316140",
+    "marketPrice": 12490
+  },
+  {
+    "crno": "1801110750893",
+    "stockName": "BNK금융지주",
+    "divRateCpri": 8.6,
+    "stckGenrDvdnAmt": 625,
+    "dvdnBasDt": "20230811",
+    "cashDvdnPayDt": "20230825",
+    "stockCode": "138930",
+    "marketPrice": 7100
+  },
+  {
+    "crno": "1101350000903",
+    "stockName": "기업은행",
+    "divRateCpri": 8.6,
+    "stckGenrDvdnAmt": 960,
+    "dvdnBasDt": "20221227",
+    "cashDvdnPayDt": "20230421",
+    "stockCode": "024110",
+    "marketPrice": 11560
+  },
+  {
+    "crno": "111",
+    "stockName": "삼성화재해상보험1우",
+    "divRateCpri": 8.4,
+    "stckGenrDvdnAmt": 13805,
+    "dvdnBasDt": "20221228",
+    "cashDvdnPayDt": "20230414",
+    "stockCode": "000810",
+    "marketPrice": 256500
+  },
+  {
+    "crno": "1701110429523",
+    "stockName": "DGB금융지주",
+    "divRateCpri": 8.3,
+    "stckGenrDvdnAmt": 650,
+    "dvdnBasDt": "20221227",
+    "cashDvdnPayDt": "20230413",
+    "stockCode": "139130",
+    "marketPrice": 8230
+  },
+  {
+    "crno": "2341110096698",
+    "stockName": "동아타이어공업",
+    "divRateCpri": 8.3,
+    "stckGenrDvdnAmt": 1000,
+    "dvdnBasDt": "20221227",
+    "cashDvdnPayDt": "20230331",
+    "stockCode": "282690",
+    "marketPrice": 11550
+  },
+  {
+    "crno": "1101110031510",
+    "stockName": "부국증권1우",
+    "divRateCpri": 8.1,
+    "stckGenrDvdnAmt": 1550,
+    "dvdnBasDt": "20221227",
+    "cashDvdnPayDt": "20230406",
+    "stockCode": "001270",
+    "marketPrice": 21450
+  },
+  {
+    "crno": "1101110042955",
+    "stockName": "대신증권1우",
+    "divRateCpri": 8.1,
+    "stckGenrDvdnAmt": 1450,
+    "dvdnBasDt": "20221227",
+    "cashDvdnPayDt": "20230407",
+    "stockCode": "003540",
+    "marketPrice": 14710
+  },
+  {
+    "crno": "1101110098130",
+    "stockName": "NH투자증권1우",
+    "divRateCpri": 7.9,
+    "stckGenrDvdnAmt": 750,
+    "dvdnBasDt": "20221228",
+    "cashDvdnPayDt": "20230413",
+    "stockCode": "005940",
+    "marketPrice": 10570
+  }
+]
