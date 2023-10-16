@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.expression.ExpressionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.shinhan.bullsandbears.common.CustomException;
+import com.shinhan.bullsandbears.common.CustomExceptionList;
 import com.shinhan.bullsandbears.domain.User;
 import com.shinhan.bullsandbears.domain.jwt.Jwt;
 import com.shinhan.bullsandbears.domain.jwt.JwtService;
@@ -32,12 +33,6 @@ public class OAuthController {
 	private final JwtService jwtService;
 	private final UserRepository userRepository;
 
-	@GetMapping("/test")
-	public ResponseEntity<String> test() {
-		String test = "Test";
-		return new ResponseEntity<>(test, HttpStatus.OK);
-	}
-
 	@GetMapping("/jwt")
 	public void createToken(HttpServletResponse response, HttpServletRequest request,
 		Authentication authentication) throws Exception {
@@ -51,7 +46,6 @@ public class OAuthController {
 
 		response.sendRedirect(UriComponentsBuilder.fromUriString("http://localhost:3000")
 			.queryParam("accessToken", token.getAccessToken())
-			.queryParam("refreshToken", token.getRefreshToken())
 			.queryParam("name", user.getName())
 			.build()
 			.encode(StandardCharsets.UTF_8)
@@ -60,10 +54,10 @@ public class OAuthController {
 
 	@GetMapping("/refresh")
 	public ResponseEntity<Map<String, String>> checkRefreshToken(HttpServletRequest request,
-		HttpServletResponse response) throws Exception {
+		HttpServletResponse response) {
 		String refreshToken = request.getHeader("refreshToken");
 		if (!jwtService.verifyToken(refreshToken)) {
-			throw new Exception("refresh token error");
+			throw new CustomException(CustomExceptionList.REFRESH_TOKEN_ERROR);
 		}
 
 		String email = jwtService.getEmail(refreshToken);
@@ -71,10 +65,10 @@ public class OAuthController {
 		String name = jwtService.getName(refreshToken);
 
 		User user = userRepository.findByEmailAndProvider(email, provider)
-			.orElseThrow(() -> new ExpressionException("user not found error"));
+			.orElseThrow(() -> new CustomException(CustomExceptionList.NO_SUCH_USER_ERROR));
 
 		if (!user.getRefreshToken().equals(refreshToken)) {
-			throw new Exception("refresh token error");
+			throw new CustomException(CustomExceptionList.REFRESH_TOKEN_ERROR);
 		}
 
 		Jwt token = jwtService.generateToken(email, name, provider);
@@ -86,9 +80,9 @@ public class OAuthController {
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
 
-	private User getAuthUser(Map<String, Object> attributes) throws Exception {
+	private User getAuthUser(Map<String, Object> attributes) {
 		return userRepository.findByEmailAndProvider((String)attributes.get("email"),
 				(String)attributes.get("provider"))
-			.orElseThrow(() -> new Exception("member not found error"));
+			.orElseThrow(() -> new CustomException(CustomExceptionList.NO_SUCH_USER_ERROR));
 	}
 }

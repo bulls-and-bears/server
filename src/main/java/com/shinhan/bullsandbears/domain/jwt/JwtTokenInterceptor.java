@@ -7,10 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.shinhan.bullsandbears.common.CustomException;
+import com.shinhan.bullsandbears.common.CustomExceptionList;
 
-@Slf4j
+import lombok.RequiredArgsConstructor;
+
 @Component
 @RequiredArgsConstructor
 public class JwtTokenInterceptor implements HandlerInterceptor {
@@ -18,21 +19,18 @@ public class JwtTokenInterceptor implements HandlerInterceptor {
 	private final JwtService jwtService;
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-		throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 		Cookie[] cookies = request.getCookies();
-		if (cookies == null) {
-			throw new Exception("no cookie");
-		}
-
-		for (Cookie cookie : cookies) {
-			if (cookie.getName().equals("accessToken")) {
-				String accessToken = cookie.getValue();
-				if (jwtService.verifyToken(accessToken)) {
-					return true;
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals("accessToken")) {
+					String accessToken = cookie.getValue();
+					if (jwtService.verifyToken(accessToken)) {
+						return true;
+					}
 				}
 			}
 		}
-		return false;
+		throw new CustomException(CustomExceptionList.ACCESS_TOKEN_ERROR);
 	}
 }

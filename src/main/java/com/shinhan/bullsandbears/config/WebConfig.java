@@ -34,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(jwtTokenInterceptor)
 			// 인증이 필요한 api
-			.addPathPatterns("/oauth/test")
+			.addPathPatterns("/**")
 			// 인증이 필요 없는 api
 			.excludePathPatterns("/oauth/jwt");
 	}
