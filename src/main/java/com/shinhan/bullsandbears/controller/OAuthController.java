@@ -34,7 +34,7 @@ public class OAuthController {
 	private final JwtService jwtService;
 	private final UserRepository userRepository;
 
-	@GetMapping("/jwt")
+	@GetMapping("/token")
 	public void createToken(HttpServletResponse response, HttpServletRequest request,
 		Authentication authentication) throws Exception {
 		OAuth2User oAuth2User = (OAuth2User)authentication.getPrincipal();

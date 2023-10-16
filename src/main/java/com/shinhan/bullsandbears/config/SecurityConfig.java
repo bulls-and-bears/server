@@ -32,7 +32,7 @@ public class SecurityConfig {
 
 			.and()
 			.oauth2Login()
-			.defaultSuccessUrl("/oauth/jwt", true)
+			.defaultSuccessUrl("/oauth/token", true)
 			.userInfoEndpoint()
 			.userService(customOAuth2UserService);
 
