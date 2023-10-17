@@ -20,7 +20,6 @@ public class ReportServiceImpl implements ReportService {
 
   private final StockRepository stockRepository;
   private final StockReportHistoryRepository stockReportHistoryRepository;
-  private final ReportRepository reportRepository;
 
   @Override
   @Transactional
@@ -34,10 +33,23 @@ public class ReportServiceImpl implements ReportService {
 
     List<Map<StockMaster, Integer>> optimalStocks = findOptimalStockCombination(calculatedStocks, amount);
 
+    Map<StockMaster, Integer> comb = optimalStocks.get(0);
+    BigDecimal totalDividend = BigDecimal.ZERO;
+
+    for (Map.Entry<StockMaster, Integer> entry : comb.entrySet()) {
+      StockMaster stock = entry.getKey();
+      int count = entry.getValue();
+      BigDecimal decimalCount = new BigDecimal(count);
+      BigDecimal dividend = stock.getDividendAmount().multiply(decimalCount);
+      totalDividend = totalDividend.add(dividend);
+    }
+    System.out.println(totalDividend);
+
     Report report = Report.builder()
             .duration(duration)
             .amount(amount)
             .createdAt(LocalDate.now())
+            .totalDividend(totalDividend)
             .build();
 
     for (int groupNum = 0; groupNum < optimalStocks.size(); groupNum++) {
@@ -77,7 +89,7 @@ public class ReportServiceImpl implements ReportService {
     return sortedStocks;
   }
 
-  public List<StockMaster> filterByDividendRecordDate(List<StockMaster> stocks, LocalDate currentDate){
+  public List<StockMaster> filterByDividendRecordDate(List<StockMaster> stocks, LocalDate currentDate) {
 
     return stocks.stream()
             .filter(stock -> stock.getDividendRecordDate().isAfter(currentDate))
@@ -100,9 +112,9 @@ public class ReportServiceImpl implements ReportService {
   }
 
   public List<Map<StockMaster, Integer>> findOptimalStockCombination(List<StockMaster> stocks, BigDecimal amount) {
-    List<Map<StockMaster, Integer>> optimalCombinations = new ArrayList<>();  // <주식, 개수> 최적 조합 리스트
-    Map<StockMaster, Integer> currentCombination = new HashMap<>();   // <주식, 개수> 현재 조합
-    backtrack(optimalCombinations, currentCombination, stocks, amount, 0); // 백트래킹을 시작
+    List<Map<StockMaster, Integer>> optimalCombinations = new ArrayList<>();
+    Map<StockMaster, Integer> currentCombination = new HashMap<>();
+    backtrack(optimalCombinations, currentCombination, stocks, amount, 0);
 
     return optimalCombinations;
   }
@@ -148,7 +160,6 @@ public class ReportServiceImpl implements ReportService {
             .map(entry -> entry.getKey().getDividendAmount().multiply(BigDecimal.valueOf(entry.getValue())))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
-
-
-
 }
+
+
