@@ -1,5 +1,6 @@
 package com.shinhan.bullsandbears.domain;
 
+import com.shinhan.bullsandbears.report.Report;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

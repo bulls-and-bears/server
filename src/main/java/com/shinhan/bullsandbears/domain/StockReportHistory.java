@@ -1,6 +1,9 @@
 package com.shinhan.bullsandbears.domain;
 
 import javax.persistence.*;
+
+import com.shinhan.bullsandbears.report.Report;
+import com.shinhan.bullsandbears.stock.StockMaster;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,10 +26,15 @@ public class StockReportHistory {
   @JoinColumn(name="report_id")
   private Report report;
 
+  private Integer stockGroup;   // 주식 리스트 그룹
+  private Integer stockUnits;   // 하나의 주식당 구매한 개수
+
   @Builder
-  public StockReportHistory(StockMaster stockMaster, Report report){
+  public StockReportHistory(StockMaster stockMaster, Report report, Integer stockUnits, Integer stockGroup){
     this.stockMaster = stockMaster;
     this.report = report;
+    this.stockUnits = stockUnits;
+    this.stockGroup = stockGroup;
   }
 
 }
