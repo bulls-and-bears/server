@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/oauth")
+@RequestMapping("/api/v1/oauth")
 public class OAuthController {
 
 	private final JwtService jwtService;
