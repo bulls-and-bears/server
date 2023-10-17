@@ -31,6 +31,10 @@ public class SecurityConfig {
 			.cors().configurationSource(webConfig.corsConfigurationSource())
 
 			.and()
+			.logout()
+			.logoutSuccessUrl("/")
+
+			.and()
 			.oauth2Login()
 			.defaultSuccessUrl("/api/v1/oauth/token", true)
 			.userInfoEndpoint()
