@@ -1,8 +1,10 @@
 package com.shinhan.bullsandbears.report;
 import com.shinhan.bullsandbears.domain.Duration;
+import com.shinhan.bullsandbears.stock.StockDto;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public class ReportDto {
   @Getter
@@ -25,6 +27,19 @@ public class ReportDto {
       this.createdAt = report.getCreatedAt();
 
     }
+  }
+
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  @AllArgsConstructor
+  public static class SearchResponse {
+    private Long reportId;
+    private List<StockDto.StockGroupInfo> stockGroupInfoList;
+
+    public void addStockGroupInfo(StockDto.StockGroupInfo stockGroupInfo) {
+      stockGroupInfoList.add(stockGroupInfo);
+    }
+
   }
 
 }
