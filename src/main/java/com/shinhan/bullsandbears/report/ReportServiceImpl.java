@@ -1,6 +1,7 @@
 package com.shinhan.bullsandbears.report;
 
 import com.shinhan.bullsandbears.domain.Duration;
+import com.shinhan.bullsandbears.stock.StockDto;
 import com.shinhan.bullsandbears.stock.StockMaster;
 import com.shinhan.bullsandbears.domain.StockReportHistory;
 import com.shinhan.bullsandbears.stock.StockRepository;
@@ -20,6 +21,7 @@ public class ReportServiceImpl implements ReportService {
 
   private final StockRepository stockRepository;
   private final StockReportHistoryRepository stockReportHistoryRepository;
+  private final ReportRepository reportRepository;
 
   @Override
   @Transactional
@@ -160,6 +162,56 @@ public class ReportServiceImpl implements ReportService {
             .map(entry -> entry.getKey().getDividendAmount().multiply(BigDecimal.valueOf(entry.getValue())))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
+
+  @Override
+  public ReportDto.SearchResponse searchReport(Long reportId) {
+
+    Report report = reportRepository.findById(reportId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id" + reportId + "와 일치하는 Report가 존재하지 않습니다."));
+
+    ReportDto.SearchResponse searchResponse = new ReportDto.SearchResponse(reportId, new ArrayList<>());
+
+    List<StockReportHistory> stockReportHistoryList = report.getStockReportHistoryList();
+
+    Map<Integer, List<StockReportHistory>> groupedStockMap = groupStockByGroupId(stockReportHistoryList);
+
+    for (Map.Entry<Integer, List<StockReportHistory>> entry : groupedStockMap.entrySet()) {
+      Integer groupId = entry.getKey();
+      List<StockReportHistory> groupStockList = entry.getValue();
+
+      StockDto.StockGroupInfo stockGroupInfo = new StockDto.StockGroupInfo(groupId, new ArrayList<>());
+
+      for (StockReportHistory stock : groupStockList) {
+        String stockName = stock.getStockMaster().getStockName();
+        Integer stockUnits = stock.getStockUnits();
+
+        StockDto.StockInfo stockInfo = new StockDto.StockInfo(stockName, stockUnits);
+        stockGroupInfo.addStock(stockInfo);
+      }
+      searchResponse.addStockGroupInfo(stockGroupInfo);
+    }
+    return searchResponse;
+  }
+
+  public Map<Integer, List<StockReportHistory>> groupStockByGroupId(List<StockReportHistory> stockReportHistoryList) {
+    Map<Integer, List<StockReportHistory>> groupedStockMap = new HashMap<>();
+
+    for (StockReportHistory stockReportHistory : stockReportHistoryList) {
+      Integer groupId = stockReportHistory.getStockGroup();
+
+      if (groupedStockMap.containsKey(groupId)) {
+        groupedStockMap.get(groupId).add(stockReportHistory);
+      } else {
+        List<StockReportHistory> newGroup = new ArrayList<>();
+        newGroup.add(stockReportHistory);
+        groupedStockMap.put(groupId, newGroup);
+
+      }
+    }
+
+    return groupedStockMap;
+  }
 }
+
 
 
