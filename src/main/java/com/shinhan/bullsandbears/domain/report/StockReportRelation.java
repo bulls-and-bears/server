@@ -2,8 +2,7 @@ package com.shinhan.bullsandbears.domain.report;
 
 import javax.persistence.*;
 
-import com.shinhan.bullsandbears.domain.report.Report;
-import com.shinhan.bullsandbears.domain.stock.StockMaster;
+import com.shinhan.bullsandbears.domain.stock.Stock;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +20,7 @@ public class StockReportRelation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stock_id")
-    private StockMaster stockMaster;
+    private Stock stock;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "report_id")
@@ -31,8 +30,8 @@ public class StockReportRelation {
     private Integer stockUnits;   // 하나의 주식당 구매한 개수
 
     @Builder
-    public StockReportRelation(StockMaster stockMaster, Report report, Integer stockUnits, Integer stockGroup) {
-        this.stockMaster = stockMaster;
+    public StockReportRelation(Stock stock, Report report, Integer stockUnits, Integer stockGroup) {
+        this.stock = stock;
         this.report = report;
         this.stockUnits = stockUnits;
         this.stockGroup = stockGroup;
