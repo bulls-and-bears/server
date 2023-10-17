@@ -33,6 +33,8 @@ public class SecurityConfig {
 			.and()
 			.logout()
 			.logoutSuccessUrl("/")
+			.invalidateHttpSession(true)
+			.deleteCookies("JSESSIONID", "AccessToken")
 
 			.and()
 			.oauth2Login()
