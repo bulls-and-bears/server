@@ -69,7 +69,7 @@ public class ReportUseCase {
 
         stockReportRelationRepository.save(
                 StockReportRelation.builder()
-                        .stockMaster(stock)
+                        .stock(stock)
                         .report(report)
                         .stockUnits(stockUnits)
                         .stockGroup(stockGroup)
