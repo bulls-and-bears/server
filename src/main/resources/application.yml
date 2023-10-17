@@ -4,13 +4,17 @@ spring:
       "dev": "oauth, jwt"
     active: dev
   datasource:
-    url: jdbc:mysql://localhost:3306/myDb?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/test?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: root
+    password: 1541
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
     hibernate:
       ddl-auto: none
+
+logging:
+  level:
+    root: DEBUG
