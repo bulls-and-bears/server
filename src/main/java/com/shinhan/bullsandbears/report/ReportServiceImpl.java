@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,11 +28,16 @@ public class ReportServiceImpl implements ReportService {
   @Transactional
   public ReportDto.CreateResponse createReport(ReportDto.CreateRequest request) {
 
-    Duration duration = request.getDuration();
+    int durationValue = request.getDuration();
+    Duration duration = findDurationByValue(durationValue);
+
+    if (duration == null) {
+      duration = Duration.TWO_MONTHS; 
+    }
     BigDecimal amount = request.getAmount();
 
     List<StockMaster> stocks = stockRepository.findAll();
-    List<StockMaster> calculatedStocks = calculateLogic(stocks, duration.getDays());
+    List<StockMaster> calculatedStocks = calculateLogic(stocks);
 
     List<Map<StockMaster, Integer>> optimalStocks = findOptimalStockCombination(calculatedStocks, amount);
 
@@ -45,7 +51,7 @@ public class ReportServiceImpl implements ReportService {
       BigDecimal dividend = stock.getDividendAmount().multiply(decimalCount);
       totalDividend = totalDividend.add(dividend);
     }
-    System.out.println(totalDividend);
+
 
     Report report = Report.builder()
             .duration(duration)
@@ -68,6 +74,16 @@ public class ReportServiceImpl implements ReportService {
     return new ReportDto.CreateResponse(report);
   }
 
+  private Duration findDurationByValue(int value) {
+    for (Duration duration : Duration.values()) {
+      if (duration.getDays() == value) {
+        return duration;
+      }
+    }
+    return null; // 매칭되는 값이 없는 경우
+  }
+
+
   @Transactional
   public void createStockReport(StockMaster stock, Report report, Integer stockUnits, Integer stockGroup) {
 
@@ -81,7 +97,7 @@ public class ReportServiceImpl implements ReportService {
     );
   }
 
-  public List<StockMaster> calculateLogic(List<StockMaster> stocks, Integer duration) {
+  public List<StockMaster> calculateLogic(List<StockMaster> stocks) {
 
     List<StockMaster> filteredByDividendRecordDateStocks = filterByDividendRecordDate(stocks, LocalDate.now());
     List<StockMaster> filteredStocksByPurchaseDate = filterStocksByPurchaseDate(filteredByDividendRecordDateStocks, LocalDate.now());
