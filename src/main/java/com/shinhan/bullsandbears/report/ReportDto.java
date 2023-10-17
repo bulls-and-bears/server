@@ -3,6 +3,7 @@ import com.shinhan.bullsandbears.domain.Duration;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
 public class ReportDto {
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -16,9 +17,11 @@ public class ReportDto {
   @AllArgsConstructor
   public static class CreateResponse {
     private Long reportId;
+    private BigDecimal totalDividend;
     private LocalDate createdAt;
     public CreateResponse(Report report) {
       this.reportId = report.getId();
+      this.totalDividend = report.getTotalDividend();
       this.createdAt = report.getCreatedAt();
 
     }

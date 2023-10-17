@@ -28,14 +28,21 @@ public class Report {
   private BigDecimal amount;
   private LocalDate createdAt;
 
+  private BigDecimal totalDividend;
+
   @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<StockReportHistory> stockReportHistoryList = new ArrayList<>();
 
   @Builder
-  public Report (Duration duration, BigDecimal amount, LocalDate createdAt){
+  public Report (Duration duration, BigDecimal amount, LocalDate createdAt, BigDecimal totalDividend){
     this.duration = duration;
     this.amount = amount;
     this.createdAt = createdAt;
+    this.totalDividend = totalDividend;
+  }
+
+  public void addTotalDividend(BigDecimal totalDividend) {
+    this. totalDividend = totalDividend.add(totalDividend);
   }
 
 }
