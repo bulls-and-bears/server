@@ -1,7 +1,7 @@
 package com.shinhan.bullsandbears.web;
 
-import com.shinhan.bullsandbears.domain.report.ReportDto;
 import com.shinhan.bullsandbears.domain.report.ReportUseCase;
+import com.shinhan.bullsandbears.web.DTO.ReportDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
