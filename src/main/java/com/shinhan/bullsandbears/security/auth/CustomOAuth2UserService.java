@@ -1,4 +1,4 @@
-package com.shinhan.bullsandbears.auth;
+package com.shinhan.bullsandbears.security.auth;
 
 import java.util.Collections;
 import java.util.Map;
@@ -13,8 +13,8 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import com.shinhan.bullsandbears.domain.User;
-import com.shinhan.bullsandbears.repository.UserRepository;
+import com.shinhan.bullsandbears.domain.user.User;
+import com.shinhan.bullsandbears.domain.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

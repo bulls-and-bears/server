@@ -1,4 +1,4 @@
-package com.shinhan.bullsandbears.auth;
+package com.shinhan.bullsandbears.security.auth;
 
 import java.util.Arrays;
 import java.util.Map;

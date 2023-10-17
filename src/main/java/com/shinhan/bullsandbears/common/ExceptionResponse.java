@@ -9,6 +9,6 @@ import lombok.RequiredArgsConstructor;
 @Builder
 public class ExceptionResponse {
 
-	private final String code;
-	private final String message;
+    private final String code;
+    private final String message;
 }

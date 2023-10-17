@@ -1,4 +1,4 @@
-package com.shinhan.bullsandbears.report;
+package com.shinhan.bullsandbears.domain.report;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

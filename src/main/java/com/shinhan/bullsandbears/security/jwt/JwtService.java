@@ -1,4 +1,4 @@
-package com.shinhan.bullsandbears.domain.jwt;
+package com.shinhan.bullsandbears.security.jwt;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

@@ -1,6 +1,6 @@
-package com.shinhan.bullsandbears.auth;
+package com.shinhan.bullsandbears.security.auth;
 
-import com.shinhan.bullsandbears.domain.User;
+import com.shinhan.bullsandbears.domain.user.User;
 
 import lombok.Getter;
 import lombok.Setter;
