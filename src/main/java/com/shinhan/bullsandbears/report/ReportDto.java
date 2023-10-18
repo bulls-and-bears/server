@@ -12,7 +12,7 @@ public class ReportDto {
   @AllArgsConstructor
   public static class CreateRequest {
     private BigDecimal amount;
-    private Duration duration;
+    private int duration;
   }
   @Getter
   @NoArgsConstructor(access = AccessLevel.PROTECTED)
