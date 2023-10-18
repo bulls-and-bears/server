@@ -8,5 +8,5 @@ import java.util.List;
 public interface ReportService {
   ReportDto.CreateResponse createReport(ReportDto.CreateRequest request, Long userId);
   ReportDto.SearchResponse searchReport(Long reportId);
-  List<ReportDto.SearchResponse> findReportByUser(Long userId);
+  ReportDto.UserSearchResponse findReportByUser(Long userId);
 }

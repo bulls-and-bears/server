@@ -24,7 +24,7 @@ public class ReportController {
   }
 
   @GetMapping("/mypage/{userId}")
-  public ResponseEntity<List<ReportDto.SearchResponse>> searchReportByUser(@PathVariable("userId") Long userId) {
+  public ResponseEntity<ReportDto.UserSearchResponse> searchReportByUser(@PathVariable("userId") Long userId) {
     return ResponseEntity.status(HttpStatus.OK).body(reportService.findReportByUser(userId));
   }
 }
