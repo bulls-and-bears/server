@@ -30,17 +30,14 @@ public class Stock {
     @Column(name = "stock_name")
     private String stockName;        // 종목명
 
-    @Column(name = "price")
-    private Long price;        // 주식 가격
+    @Column(name = "market_price")
+    private BigDecimal price;        // 주식 가격
 
     @Column(name = "dividend_amount")
-    private Long dividendAmount;      // 주당 배당금
+    private BigDecimal dividendAmount;      // 주당 배당금
 
     @Column(name = "dividend_per_share_ratio")
-    private BigDecimal DividendPerShareRatio;   // 시가 배당률
-
-    @Column(name = "stock_type")
-    private String stockType;        // 주식 종류
+    private BigDecimal dividendPerShareRatio;   // 시가 배당률
 
     @Column(name = "dividend_record_date")
     private LocalDate dividendRecordDate;       // 배당금 기준일

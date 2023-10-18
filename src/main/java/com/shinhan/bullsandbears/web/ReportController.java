@@ -1,6 +1,5 @@
 package com.shinhan.bullsandbears.web;
 
-import com.shinhan.bullsandbears.domain.report.Report;
 import com.shinhan.bullsandbears.domain.report.ReportUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,7 +15,7 @@ public class ReportController {
     private final ReportUseCase reportUseCase;
 
     @GetMapping("/report")
-    public Report get(@RequestParam Long money, @RequestParam String duration) {
+    public ReportDto get(@RequestParam Long money, @RequestParam String duration) {
         return reportUseCase.get(money, duration);
     }
 

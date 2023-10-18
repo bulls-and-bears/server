@@ -2,6 +2,9 @@ package com.shinhan.bullsandbears.domain.stock;
 
 import org.springframework.stereotype.Service;
 
+
+import com.shinhan.bullsandbears.domain.report.Duration;
+
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -16,15 +19,15 @@ public class StockUseCase {
         this.stockRepository = stockRepository;
     }
 
-    public List<Stock> findTop5StocksByDividendRatio() {
-        return findSortedStocksByDividendRatio(LocalDate.of(2022, 4, 12));
+    public List<Stock> findTop5StocksByDividendRatio(String duration) {
+        return findSortedStocksByDividendRatio(LocalDate.of(2023, 4, 12), Duration.valueOf(duration));
         // TODO : 실제 서비스 시 currentTime으로 변경
     }
 
-    private List<Stock> findSortedStocksByDividendRatio(LocalDate referenceDate) {
+    private List<Stock> findSortedStocksByDividendRatio(LocalDate referenceDate, Duration duration) {
         return stockRepository.findAll().stream()
                 .filter(stock -> isValidByDividendRecordDate(stock, referenceDate))
-                .filter(stock -> isValidByPurchaseDate(stock, referenceDate))
+                .filter(stock -> isOverMinimumHoldingPeriod(stock, duration))
                 .sorted(Comparator.comparing(Stock::getDividendPerShareRatio).reversed())
                 .limit(5)
                 .collect(Collectors.toList());
@@ -34,8 +37,9 @@ public class StockUseCase {
         return stock.getDividendRecordDate().isAfter(currentDate);
     }
 
-    private boolean isValidByPurchaseDate(Stock stock, LocalDate purchaseDate) {
-        return purchaseDate.isBefore(stock.getDividendRecordDate().minusDays(1));
+    private boolean isOverMinimumHoldingPeriod(Stock stock, Duration duration) {
+        return (java.time.Period.between(stock.getDividendRecordDate(), stock.getDividendPaymentDate()).getDays() + 2) < duration.getDays();
     }
+
 
 }

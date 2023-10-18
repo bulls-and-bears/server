@@ -1,0 +1,27 @@
+[
+  {
+    "date": "2023-06-28",
+    "dividend": 87710,
+    "valuation": 997380
+  },
+  {
+    "date": "2023-09-28",
+    "dividend": 97710,
+    "valuation": 796380
+  },
+  {
+    "date": "2023-12-28",
+    "dividend": 77710,
+    "valuation": 1097380
+  },
+  {
+    "date": "2024-03-28",
+    "dividend": 85710,
+    "valuation": 956280
+  },
+  {
+    "date": "2024-06-28",
+    "dividend": 99910,
+    "valuation": 1100000
+  }
+]
