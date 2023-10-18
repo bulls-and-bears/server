@@ -39,7 +39,18 @@ public class ReportDto {
     public void addStockGroupInfo(StockDto.StockGroupInfo stockGroupInfo) {
       stockGroupInfoList.add(stockGroupInfo);
     }
+  }
 
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  @AllArgsConstructor
+  public static class UserSearchResponse {
+    private Long userId;
+    private List<SearchResponse> reportList;
+
+    public void addReportInfo(SearchResponse ReportInfo) {
+      reportList.add(ReportInfo);
+    }
   }
 
 }

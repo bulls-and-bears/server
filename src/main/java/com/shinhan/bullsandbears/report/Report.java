@@ -2,6 +2,7 @@ package com.shinhan.bullsandbears.report;
 
 import com.shinhan.bullsandbears.domain.Duration;
 import com.shinhan.bullsandbears.domain.StockReportHistory;
+import com.shinhan.bullsandbears.domain.UserReportHistory;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +33,9 @@ public class Report {
 
   @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<StockReportHistory> stockReportHistoryList = new ArrayList<>();
+
+  @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<UserReportHistory> userReportHistoryList = new ArrayList<>();
 
   @Builder
   public Report (Duration duration, BigDecimal amount, LocalDate createdAt, BigDecimal totalDividend){
