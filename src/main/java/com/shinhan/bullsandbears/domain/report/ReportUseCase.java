@@ -4,6 +4,7 @@ import com.shinhan.bullsandbears.domain.stock.Stock;
 import com.shinhan.bullsandbears.domain.stock.StockUseCase;
 import com.shinhan.bullsandbears.web.ReportDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ public class ReportUseCase {
     private final StockUseCase stockUseCase;
 
     // get 요청 보내면 reportDto를 반환합니다.
+    @Cacheable(value = "reports", key = "#money + '-' + #duration")
     public ReportDto get(Long money, String duration) {
         return reportDto(money, stockUseCase.findTop5StocksByDividendRatio(duration));
     }
@@ -65,6 +67,5 @@ public class ReportUseCase {
 
         return report;
     }
-
-
+    
 }
