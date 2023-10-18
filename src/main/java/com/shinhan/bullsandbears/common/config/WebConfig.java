@@ -31,9 +31,9 @@ public class WebConfig implements WebMvcConfigurer {
         return source;
     }
 
-//	public void addInterceptors(InterceptorRegistry registry) {
-//		registry.addInterceptor(jwtTokenInterceptor)
-//			.addPathPatterns("/**")
-//			.excludePathPatterns("/oauth/**");
-//	}
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(jwtTokenInterceptor)
+			.addPathPatterns("/**")
+			.excludePathPatterns("/oauth/**");
+	}
 }
