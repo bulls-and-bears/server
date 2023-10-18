@@ -1,6 +1,9 @@
 package com.shinhan.bullsandbears.report;
 
 import com.shinhan.bullsandbears.domain.Duration;
+import com.shinhan.bullsandbears.domain.User;
+import com.shinhan.bullsandbears.domain.UserReportHistory;
+import com.shinhan.bullsandbears.repository.UserRepository;
 import com.shinhan.bullsandbears.stock.StockDto;
 import com.shinhan.bullsandbears.stock.StockMaster;
 import com.shinhan.bullsandbears.domain.StockReportHistory;
@@ -22,10 +25,14 @@ public class ReportServiceImpl implements ReportService {
   private final StockRepository stockRepository;
   private final StockReportHistoryRepository stockReportHistoryRepository;
   private final ReportRepository reportRepository;
+  private final UserReportHistoryRepository userReportHistoryRepository;
+  private final UserRepository userRepository;
 
   @Override
   @Transactional
-  public ReportDto.CreateResponse createReport(ReportDto.CreateRequest request) {
+  public ReportDto.CreateResponse createReport(ReportDto.CreateRequest request, Long userId) {
+
+    User user = findUserById(userId);
 
     Duration duration = request.getDuration();
     BigDecimal amount = request.getAmount();
@@ -45,7 +52,6 @@ public class ReportServiceImpl implements ReportService {
       BigDecimal dividend = stock.getDividendAmount().multiply(decimalCount);
       totalDividend = totalDividend.add(dividend);
     }
-    System.out.println(totalDividend);
 
     Report report = Report.builder()
             .duration(duration)
@@ -62,6 +68,7 @@ public class ReportServiceImpl implements ReportService {
         if (count != 0) {
           Integer stockGroup = Integer.valueOf(groupNum);
           createStockReport(stock, report, count, stockGroup);
+          createUserReport(user, report);
         }
       }
     }
@@ -77,6 +84,16 @@ public class ReportServiceImpl implements ReportService {
                     .report(report)
                     .stockUnits(stockUnits)
                     .stockGroup(stockGroup)
+                    .build()
+    );
+  }
+
+  @Transactional
+  public void createUserReport(User user, Report report) {
+    userReportHistoryRepository.save(
+            UserReportHistory.builder()
+                    .user(user)
+                    .report(report)
                     .build()
     );
   }
@@ -210,6 +227,27 @@ public class ReportServiceImpl implements ReportService {
     }
 
     return groupedStockMap;
+  }
+  @Override
+  public List<ReportDto.SearchResponse> findReportByUser(Long userId) {
+
+    User user = findUserById(userId);
+
+    return user.getUserReportHistoryList()
+            .stream()
+            .map(UserReportHistory::getReport)
+            .map(report -> new ReportDto.SearchResponse(report.getId(), new ArrayList<>()))
+            .collect(Collectors.toList());
+  }
+
+  private User findUserById(Long userId){
+    if (userId != null) {
+      return userRepository.findById(userId)
+              .orElseThrow(() -> new NoSuchElementException("해당 Id " + userId + "와 일치하는 사용자가 존재하지 않습니다."));
+    } else {
+      throw new NoSuchElementException("해당 Id " + userId + "와 일치하는 사용자가 존재하지 않습니다.");
+
+    }
   }
 }
 
