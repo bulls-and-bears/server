@@ -20,10 +20,10 @@ public class ReportUseCase {
     // get 요청 보내면 reportDto를 반환합니다.
     @Cacheable(value = "reports", key = "#money + '-' + #duration")
     public ReportDto get(Long money, String duration) {
-        return reportDto(money, stockUseCase.findTop5StocksByDividendRatio(duration));
+        return reportDto(money, duration, stockUseCase.findTop5StocksByDividendRatio(duration));
     }
 
-    private ReportDto reportDto(Long money, List<Stock> topStocks) {
+    private ReportDto reportDto(Long money, String duration, List<Stock> topStocks) {
         int n = topStocks.size();
         Long[][] dp = new Long[n + 1][(int) (long) money + 1];
 
@@ -61,11 +61,13 @@ public class ReportUseCase {
 
         // 결과 DTO 반환
         ReportDto report = new ReportDto();
+        report.setMoney(money);
+        report.setDuration(duration);
         report.setTable(stockTable);
         report.setTotalDividend(dp[n][(int) (long) money]);
         report.setTotalValuation(totalCost);
 
         return report;
     }
-    
+
 }

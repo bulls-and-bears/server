@@ -21,6 +21,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .authorizeRequests() //TODO(배포 시 제거) 개발 환경: 모든 요청 허용
+                .antMatchers("/**").permitAll()   //TODO(배포 시 제거) 개발 환경: 모든 요청 허용
+                .and()//TODO(배포 시 제거) 개발 환경: 모든 요청 허용
                 .csrf().disable()
                 .formLogin().disable()
                 .logout().disable()
