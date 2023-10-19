@@ -1,0 +1,94 @@
+name: Backend CI / CD
+
+on:
+  push:
+    branches:
+      - "main"
+
+# workflow 내에서 사용할 변수 값 저장
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY_NAME: "team-3"
+  ENV_NAME: "prod"
+  APP: "686710509719.dkr.ecr.ap-northeast-2.amazonaws.com/team-3"
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build -x test
+
+      - name: Set up Docker Build
+        id: docker_build
+        uses: docker/setup-buildx-action@v2
+
+      - name: main Environment Docker build & Push Docker image to Amazon ECR
+        uses: docker/build-push-action@v2
+        if: contains(github.ref, 'main')
+        env:
+          ECR: ${{ steps.login-ecr.outputs.registry }}
+          TAG: ${{ github.sha }}
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{env.ECR}}/${{env.ECR_REPOSITORY_NAME}}:server-${{env.TAG}}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            ENV=main
+
+      - name: Checkout for Kustomize repository
+        uses: actions/checkout@v2
+        with:
+          # k8s yaml 파일이 있는 repo
+          repository: bulls-and-bears/manifest
+          ref: main
+          token: ${{ secrets.ACTION_TOKEN }}
+          # 최상위 경로로 repository와 동일하게 설정
+          path: manifest
+
+      - name: Update Kubernetes resources
+        # 파일 이름 manifest로 바꾸기
+        run: |
+          pwd
+          cd manifest/overlays/${{ env.ENV_NAME }}/ 
+          kustomize edit set image ${{ env.APP }}:server-${{ github.sha }}
+
+      - name: Commit manifest files
+        # 파일 이름 manifest로 바꾸기
+        run: |
+          cd manifest
+          git config --global user.email "chxrryda@gmail.com"
+          git config --global user.name "kkkwp"
+          git commit -am "Update image"
+          git push -u origin main
