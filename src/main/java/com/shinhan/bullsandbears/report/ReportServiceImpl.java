@@ -36,6 +36,7 @@ public class ReportServiceImpl implements ReportService {
     User user = findUserByName(userName);
 
     int durationValue = request.getDuration();
+
     Duration duration = findDurationByValue(durationValue);
 
     if (duration == null) {
@@ -44,7 +45,7 @@ public class ReportServiceImpl implements ReportService {
     BigDecimal amount = request.getAmount();
 
     List<StockMaster> stocks = stockRepository.findAll();
-    List<StockMaster> calculatedStocks = calculateLogic(stocks);
+    List<StockMaster> calculatedStocks = calculateLogic(stocks, durationValue);
 
     List<Map<StockMaster, Integer>> optimalStocks = findOptimalStockCombination(calculatedStocks, amount);
 
@@ -116,10 +117,10 @@ public class ReportServiceImpl implements ReportService {
   }
 
 
-  public List<StockMaster> calculateLogic(List<StockMaster> stocks) {
+  public List<StockMaster> calculateLogic(List<StockMaster> stocks, int durationValue) {
 
     List<StockMaster> filteredByDividendRecordDateStocks = filterByDividendRecordDate(stocks, LocalDate.now());
-    List<StockMaster> filteredStocksByPurchaseDate = filterStocksByPurchaseDate(filteredByDividendRecordDateStocks, LocalDate.now());
+    List<StockMaster> filteredStocksByPurchaseDate = filterStocksByPurchaseDate(filteredByDividendRecordDateStocks, LocalDate.now(), durationValue);
 
     List<StockMaster> sortedStocks = sortedByDividendPerShareRatio(filteredStocksByPurchaseDate);
 
@@ -133,18 +134,24 @@ public class ReportServiceImpl implements ReportService {
             .collect(Collectors.toList());
   }
 
-  public List<StockMaster> filterStocksByPurchaseDate(List<StockMaster> stocks, LocalDate purchaseDate) {
+  // 현재 날짜 < 배당기준일 하루 전 < 현재날짜 + duration
+  public List<StockMaster> filterStocksByPurchaseDate(List<StockMaster> stocks, LocalDate purchaseDate, int duration) {
+    int durationDay = duration * 30;
+    LocalDate endDate = purchaseDate.plusDays(durationDay);
+
     return stocks.stream()
-            .filter(stock -> purchaseDate.isBefore(stock.getDividendRecordDate().minusDays(1)))
+            .filter(stock -> purchaseDate.isBefore(stock.getDividendRecordDate().minusDays(1))
+                    && endDate.isAfter(stock.getDividendRecordDate().minusDays(1)))
             .collect(Collectors.toList());
   }
+
 
   public List<StockMaster> sortedByDividendPerShareRatio(List<StockMaster> stocks) {
     Comparator<StockMaster> dividendComparator = Comparator.comparing(StockMaster::getDividendPerShareRatio).reversed();
 
     return stocks.stream()
             .sorted(dividendComparator)
-            .limit(10)
+            .limit(6)
             .collect(Collectors.toList());
   }
 
