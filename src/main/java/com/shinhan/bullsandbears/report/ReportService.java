@@ -6,7 +6,7 @@ import java.util.List;
 
 @Service
 public interface ReportService {
-  ReportDto.CreateResponse createReport(ReportDto.CreateRequest request, Long userId);
+  ReportDto.CreateResponse createReport(ReportDto.CreateRequest request, String userName);
   ReportDto.SearchResponse searchReport(Long reportId);
-  ReportDto.UserSearchResponse findReportByUser(Long userId);
+  ReportDto.UserSearchResponse findReportByUser(String userName);
 }
