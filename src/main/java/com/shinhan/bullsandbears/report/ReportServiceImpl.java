@@ -218,8 +218,10 @@ public class ReportServiceImpl implements ReportService {
       for (StockReportHistory stock : groupStockList) {
         String stockName = stock.getStockMaster().getStockName();
         Integer stockUnits = stock.getStockUnits();
+        BigDecimal stockPrice = stock.getStockMaster().getPrice();
+        BigDecimal stockDividend = stock.getStockMaster().getDividendAmount();
 
-        StockDto.StockInfo stockInfo = new StockDto.StockInfo(stockName, stockUnits);
+        StockDto.StockInfo stockInfo = new StockDto.StockInfo(stockName, stockUnits, stockPrice, stockDividend);
         stockGroupInfo.addStock(stockInfo);
       }
       searchResponse.addStockGroupInfo(stockGroupInfo);
@@ -274,8 +276,10 @@ public class ReportServiceImpl implements ReportService {
         for (StockReportHistory stock : groupStockList) {
           String stockName = stock.getStockMaster().getStockName();
           Integer stockUnits = stock.getStockUnits();
+          BigDecimal stockPrice = stock.getStockMaster().getPrice();
+          BigDecimal stockDividend = stock.getStockMaster().getDividendAmount();
 
-          StockDto.StockInfo stockInfo = new StockDto.StockInfo(stockName, stockUnits);
+          StockDto.StockInfo stockInfo = new StockDto.StockInfo(stockName, stockUnits, stockPrice, stockDividend);
           stockGroupInfo.addStock(stockInfo);
         }
         searchResponse.addStockGroupInfo(stockGroupInfo);

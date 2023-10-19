@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class StockDto {
@@ -14,7 +15,8 @@ public class StockDto {
   public static class StockInfo {
     private String stockName;
     private Integer amount;
-
+    private BigDecimal price;
+    private BigDecimal dividend;
   }
 
   @Getter
