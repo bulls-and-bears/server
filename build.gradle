@@ -40,8 +40,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    // 외부 api 호출하는 라이브러리
-    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+//    // 외부 api 호출하는 라이브러리
+//    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
 }
 
 tasks.named('test') {
