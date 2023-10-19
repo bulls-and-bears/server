@@ -1,4 +1,4 @@
-FROM azul/zulu-openjdk:17-latest as builder
+FROM azul/zulu-openjdk:17-latest
 
 ARG JAR_FILE=build/libs/*.jar
 
