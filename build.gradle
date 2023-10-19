@@ -44,6 +44,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
     // TODO(리팩토링) : 여기도 패키지에 따라서 의존성 구분하는게 제일 좋은데~~ 아쉽다!!! 기간 끝나고 제가 할게용 by 재연
+
+    // 외부 api 호출하는 라이브러리
+    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
 }
 
 tasks.named('test') {
