@@ -9,11 +9,3 @@ WORKDIR /usr/src/app
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
-
-
-FROM nginx:latest
-
-COPY --from=builder /usr/src/app/app.jar /usr/share/nginx/html
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
