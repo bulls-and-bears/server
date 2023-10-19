@@ -1,6 +1,9 @@
 package com.shinhan.bullsandbears.report;
 
 import com.shinhan.bullsandbears.domain.Duration;
+import com.shinhan.bullsandbears.domain.User;
+import com.shinhan.bullsandbears.domain.UserReportHistory;
+import com.shinhan.bullsandbears.repository.UserRepository;
 import com.shinhan.bullsandbears.stock.StockDto;
 import com.shinhan.bullsandbears.stock.StockMaster;
 import com.shinhan.bullsandbears.domain.StockReportHistory;
@@ -14,6 +17,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -22,16 +26,25 @@ public class ReportServiceImpl implements ReportService {
   private final StockRepository stockRepository;
   private final StockReportHistoryRepository stockReportHistoryRepository;
   private final ReportRepository reportRepository;
+  private final UserReportHistoryRepository userReportHistoryRepository;
+  private final UserRepository userRepository;
 
   @Override
   @Transactional
-  public ReportDto.CreateResponse createReport(ReportDto.CreateRequest request) {
+  public ReportDto.CreateResponse createReport(ReportDto.CreateRequest request, Long userId) {
 
-    Duration duration = request.getDuration();
+    User user = findUserById(userId);
+
+    int durationValue = request.getDuration();
+    Duration duration = findDurationByValue(durationValue);
+
+    if (duration == null) {
+      duration = Duration.TWO_MONTHS; 
+    }
     BigDecimal amount = request.getAmount();
 
     List<StockMaster> stocks = stockRepository.findAll();
-    List<StockMaster> calculatedStocks = calculateLogic(stocks, duration.getDays());
+    List<StockMaster> calculatedStocks = calculateLogic(stocks);
 
     List<Map<StockMaster, Integer>> optimalStocks = findOptimalStockCombination(calculatedStocks, amount);
 
@@ -45,7 +58,7 @@ public class ReportServiceImpl implements ReportService {
       BigDecimal dividend = stock.getDividendAmount().multiply(decimalCount);
       totalDividend = totalDividend.add(dividend);
     }
-    System.out.println(totalDividend);
+
 
     Report report = Report.builder()
             .duration(duration)
@@ -65,8 +78,19 @@ public class ReportServiceImpl implements ReportService {
         }
       }
     }
+    createUserReport(user, report);
     return new ReportDto.CreateResponse(report);
   }
+
+  private Duration findDurationByValue(int value) {
+    for (Duration duration : Duration.values()) {
+      if (duration.getDays() == value) {
+        return duration;
+      }
+    }
+    return null;
+  }
+
 
   @Transactional
   public void createStockReport(StockMaster stock, Report report, Integer stockUnits, Integer stockGroup) {
@@ -81,7 +105,18 @@ public class ReportServiceImpl implements ReportService {
     );
   }
 
-  public List<StockMaster> calculateLogic(List<StockMaster> stocks, Integer duration) {
+  @Transactional
+  public void createUserReport(User user, Report report) {
+    userReportHistoryRepository.save(
+            UserReportHistory.builder()
+                    .user(user)
+                    .report(report)
+                    .build()
+    );
+  }
+
+
+  public List<StockMaster> calculateLogic(List<StockMaster> stocks) {
 
     List<StockMaster> filteredByDividendRecordDateStocks = filterByDividendRecordDate(stocks, LocalDate.now());
     List<StockMaster> filteredStocksByPurchaseDate = filterStocksByPurchaseDate(filteredByDividendRecordDateStocks, LocalDate.now());
@@ -166,8 +201,7 @@ public class ReportServiceImpl implements ReportService {
   @Override
   public ReportDto.SearchResponse searchReport(Long reportId) {
 
-    Report report = reportRepository.findById(reportId)
-            .orElseThrow(() -> new NoSuchElementException("해당 Id" + reportId + "와 일치하는 Report가 존재하지 않습니다."));
+    Report report = findReportById(reportId);
 
     ReportDto.SearchResponse searchResponse = new ReportDto.SearchResponse(reportId, new ArrayList<>());
 
@@ -210,6 +244,70 @@ public class ReportServiceImpl implements ReportService {
     }
 
     return groupedStockMap;
+  }
+  @Override
+  public ReportDto.UserSearchResponse findReportByUser(Long userId) {
+
+
+    User user = findUserById(userId);
+    List<UserReportHistory> userReports = user.getUserReportHistoryList();
+
+    ReportDto.UserSearchResponse searchResponseList = new ReportDto.UserSearchResponse(userId, new ArrayList<>());
+
+    for (UserReportHistory userReport : userReports) {
+      Long reportId = userReport.getReport().getId();
+      Report report = findReportById(reportId);
+
+      ReportDto.SearchResponse searchResponse = new ReportDto.SearchResponse(reportId, new ArrayList<>());
+      List<StockReportHistory> stockReportHistoryList = report.getStockReportHistoryList();
+
+      Map<Integer, List<StockReportHistory>> groupedStockMap = groupStockByGroupId(stockReportHistoryList);
+
+      for (Map.Entry<Integer, List<StockReportHistory>> entry : groupedStockMap.entrySet()) {
+        Integer groupId = entry.getKey();
+        List<StockReportHistory> groupStockList = entry.getValue();
+
+        StockDto.StockGroupInfo stockGroupInfo = new StockDto.StockGroupInfo(groupId, new ArrayList<>());
+
+        for (StockReportHistory stock : groupStockList) {
+          String stockName = stock.getStockMaster().getStockName();
+          Integer stockUnits = stock.getStockUnits();
+
+          StockDto.StockInfo stockInfo = new StockDto.StockInfo(stockName, stockUnits);
+          stockGroupInfo.addStock(stockInfo);
+        }
+        searchResponse.addStockGroupInfo(stockGroupInfo);
+      }
+      searchResponseList.addReportInfo(searchResponse);
+    }
+    return searchResponseList;
+  }
+
+
+
+  public List<Long> findReportIdsByUser(User user) {
+    List<UserReportHistory> userReports = user.getUserReportHistoryList();
+    List<Long> reportIds = userReports.stream()
+            .map(userReport -> userReport.getReport().getId())
+            .collect(Collectors.toList());
+    return reportIds;
+  }
+
+
+  private User findUserById(Long userId){
+    if (userId != null) {
+      return userRepository.findById(userId)
+              .orElseThrow(() -> new NoSuchElementException("해당 Id " + userId + "와 일치하는 사용자가 존재하지 않습니다."));
+    } else {
+      throw new NoSuchElementException("해당 Id " + userId + "와 일치하는 사용자가 존재하지 않습니다.");
+
+    }
+  }
+
+  private Report findReportById(Long reportId){
+    Report report = reportRepository.findById(reportId)
+            .orElseThrow(() -> new NoSuchElementException("해당 Id" + reportId + "와 일치하는 Report가 존재하지 않습니다."));
+    return report;
   }
 }
 
