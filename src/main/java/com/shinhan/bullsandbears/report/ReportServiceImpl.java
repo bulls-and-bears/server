@@ -245,6 +245,7 @@ public class ReportServiceImpl implements ReportService {
 
     return groupedStockMap;
   }
+
   @Override
   public ReportDto.UserSearchResponse findReportByUser(String userName) {
 
@@ -282,25 +283,6 @@ public class ReportServiceImpl implements ReportService {
       searchResponseList.addReportInfo(searchResponse);
     }
     return searchResponseList;
-  }
-
-  public List<Long> findReportIdsByUser(User user) {
-    List<UserReportHistory> userReports = user.getUserReportHistoryList();
-    List<Long> reportIds = userReports.stream()
-            .map(userReport -> userReport.getReport().getId())
-            .collect(Collectors.toList());
-    return reportIds;
-  }
-
-
-  private User findUserById(Long userId){
-    if (userId != null) {
-      return userRepository.findById(userId)
-              .orElseThrow(() -> new NoSuchElementException("해당 Id " + userId + "와 일치하는 사용자가 존재하지 않습니다."));
-    } else {
-      throw new NoSuchElementException("해당 Id " + userId + "와 일치하는 사용자가 존재하지 않습니다.");
-
-    }
   }
 
   private User findUserByName(String name) {

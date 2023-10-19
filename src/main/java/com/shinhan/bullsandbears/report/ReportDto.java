@@ -1,5 +1,4 @@
 package com.shinhan.bullsandbears.report;
-import com.shinhan.bullsandbears.domain.Duration;
 import com.shinhan.bullsandbears.stock.StockDto;
 import lombok.*;
 import java.math.BigDecimal;
