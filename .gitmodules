@@ -1,3 +1,0 @@
-[submodule "security"]
-	path = src/main/resources/security
-	url = https://github.com/bulls-and-bears/security.git

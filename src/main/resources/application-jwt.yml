@@ -1,0 +1,6 @@
+jwt:
+  secretKey: token-secret-key
+  access:
+    expiration: 3600000
+  refresh:
+    expiration: 2592000000
