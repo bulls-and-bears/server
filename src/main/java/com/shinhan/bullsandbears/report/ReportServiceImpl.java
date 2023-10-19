@@ -31,9 +31,9 @@ public class ReportServiceImpl implements ReportService {
 
   @Override
   @Transactional
-  public ReportDto.CreateResponse createReport(ReportDto.CreateRequest request, Long userId) {
+  public ReportDto.CreateResponse createReport(ReportDto.CreateRequest request, String userName) {
 
-    User user = findUserById(userId);
+    User user = findUserByName(userName);
 
     int durationValue = request.getDuration();
     Duration duration = findDurationByValue(durationValue);
@@ -246,10 +246,11 @@ public class ReportServiceImpl implements ReportService {
     return groupedStockMap;
   }
   @Override
-  public ReportDto.UserSearchResponse findReportByUser(Long userId) {
+  public ReportDto.UserSearchResponse findReportByUser(String userName) {
 
 
-    User user = findUserById(userId);
+    User user = findUserByName(userName);
+    Long userId = user.getId();
     List<UserReportHistory> userReports = user.getUserReportHistoryList();
 
     ReportDto.UserSearchResponse searchResponseList = new ReportDto.UserSearchResponse(userId, new ArrayList<>());
@@ -283,8 +284,6 @@ public class ReportServiceImpl implements ReportService {
     return searchResponseList;
   }
 
-
-
   public List<Long> findReportIdsByUser(User user) {
     List<UserReportHistory> userReports = user.getUserReportHistoryList();
     List<Long> reportIds = userReports.stream()
@@ -300,6 +299,16 @@ public class ReportServiceImpl implements ReportService {
               .orElseThrow(() -> new NoSuchElementException("해당 Id " + userId + "와 일치하는 사용자가 존재하지 않습니다."));
     } else {
       throw new NoSuchElementException("해당 Id " + userId + "와 일치하는 사용자가 존재하지 않습니다.");
+
+    }
+  }
+
+  private User findUserByName(String name) {
+    if (name != null) {
+      return userRepository.findByName(name)
+              .orElseThrow(() -> new NoSuchElementException("해당 이름 " + name + "와 일치하는 사용자가 존재하지 않습니다."));
+    } else {
+      throw new NoSuchElementException("해당 이름 " + name + "와 일치하는 사용자가 존재하지 않습니다.");
 
     }
   }

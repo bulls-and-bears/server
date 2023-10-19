@@ -5,26 +5,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/report")
+@RequestMapping("/api/v1")
 public class ReportController {
   private final ReportService reportService;
 
-  @PostMapping("/{userId}")
-  public ResponseEntity<ReportDto.CreateResponse> createReport(@RequestBody ReportDto.CreateRequest reportDto, @PathVariable("userId") Long userId) {
-    return ResponseEntity.status(HttpStatus.OK).body(reportService.createReport(reportDto, userId));
+  @PostMapping("/report")
+  public ResponseEntity<ReportDto.CreateResponse> createReport(@RequestBody ReportDto.CreateRequest reportDto, @RequestParam String name) {
+    return ResponseEntity.status(HttpStatus.OK).body(reportService.createReport(reportDto, name));
   }
 
-  @GetMapping("/{reportId}")
+  @GetMapping("/report/{reportId}")
   public ResponseEntity<ReportDto.SearchResponse> searchReport(@PathVariable("reportId") Long reportId) {
     return ResponseEntity.status(HttpStatus.OK).body(reportService.searchReport(reportId));
   }
 
-  @GetMapping("/mypage/{userId}")
-  public ResponseEntity<ReportDto.UserSearchResponse> searchReportByUser(@PathVariable("userId") Long userId) {
-    return ResponseEntity.status(HttpStatus.OK).body(reportService.findReportByUser(userId));
+  @GetMapping("/mypage")
+  public ResponseEntity<ReportDto.UserSearchResponse> searchReportByUser(@RequestParam String name) {
+    return ResponseEntity.status(HttpStatus.OK).body(reportService.findReportByUser(name));
   }
 }
